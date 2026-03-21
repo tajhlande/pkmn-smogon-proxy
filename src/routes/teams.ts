@@ -1,9 +1,9 @@
-import express, { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import { getTeams } from '../controllers';
+import { validateTeams } from '../middleware/validation';
 
-const router: Router = express.Router();
+const router: Router = Router();
 
-router.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'Teams endpoint - To be implemented' });
-});
+router.get('/', validateTeams, getTeams);
 
 export default router;

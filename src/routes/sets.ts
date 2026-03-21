@@ -1,9 +1,9 @@
-import express, { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import { getSets } from '../controllers';
+import { validateSets } from '../middleware/validation';
 
-const router: Router = express.Router();
+const router: Router = Router();
 
-router.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'Sets endpoint - To be implemented' });
-});
+router.get('/', validateSets, getSets);
 
 export default router;

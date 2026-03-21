@@ -1,191 +1,338 @@
-# Smogon API Proxy - Project Structure
+# Smogon API Proxy
 
-## Overview
+A REST API wrapper for the `@pkmn/smogon` package, providing access to Smogon's Pokémon analyses, movesets, sample teams, and usage statistics.
 
-This project provides an OpenAPI-compliant REST API that wraps the functionality of the `@pkmn/smogon` package, exposing Smogon's Pokémon analyses, movesets, sample teams, and usage statistics through standardized HTTP endpoints.
+## Quick Start
 
-## Purpose
+```bash
+# Install dependencies
+npm install
 
-The `@pkmn/smogon` package provides access to data from [data.pkmn.cc](https://data.pkmn.cc), which contains curated datasets from Smogon and Pokémon Showdown. This proxy API makes that data accessible through a clean, documented REST API interface following OpenAPI 3.0 specification.
+# Development mode with hot reload
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+The server runs on port 3000 by default (configurable via `PORT` environment variable).
+
+## API Endpoints
+
+### Base URL
+
+```
+http://localhost:3000
+```
+
+### Authentication (Optional)
+
+API key authentication can be enabled by setting `API_KEY_REQUIRED=true`. When enabled, include your API key via:
+
+- **Authorization header**: `Authorization: Bearer sk_your_api_key`
+- **Query parameter**: `?api_key=sk_your_api_key`
+
+---
+
+### GET /
+
+Returns API information and available endpoints.
+
+**Example:**
+```bash
+curl http://localhost:3000/
+```
+
+**Response:**
+```json
+{
+  "message": "Smogon API Proxy",
+  "version": "1.0.0",
+  "endpoints": {
+    "analyses": "/analyses",
+    "formats": "/formats",
+    "sets": "/sets",
+    "stats": "/stats",
+    "teams": "/teams"
+  },
+  "documentation": "/api-docs"
+}
+```
+
+---
+
+### GET /formats
+
+Returns list of available battle formats.
+
+**Example:**
+```bash
+curl http://localhost:3000/formats
+```
+
+**Response:**
+```json
+["gen9ou", "gen9ubers", "gen9uu", "gen9ru", "gen9nu", "gen9pu", ...]
+```
+
+---
+
+### GET /analyses
+
+Retrieve Pokémon analyses from Smogon.
+
+**Query Parameters:**
+| Parameter | Type   | Required | Description |
+|-----------|--------|----------|-------------|
+| format    | string | No       | Battle format (e.g., "gen9ou") |
+| pokemon   | string | No       | Pokémon name |
+
+**Examples:**
+
+```bash
+# Get all analyses for a format
+curl "http://localhost:3000/analyses?format=gen9ou"
+
+# Get analysis for specific Pokémon
+curl "http://localhost:3000/analyses?format=gen9ou&pokemon=Charizard"
+```
+
+**Response:**
+```json
+{
+  "format": "gen9ou",
+  "pokemon": "Charizard",
+  "analysis": {
+    "overview": "...",
+    "moves": [...],
+    "sets": [...],
+    "checks": [...],
+    "counters": [...]
+  }
+}
+```
+
+---
+
+### GET /sets
+
+Retrieve competitive moveset data.
+
+**Query Parameters:**
+| Parameter | Type   | Required | Description |
+|-----------|--------|----------|-------------|
+| format    | string | Yes      | Battle format (e.g., "gen9ou") |
+| pokemon   | string | No       | Pokémon name (returns all if omitted) |
+
+**Examples:**
+
+```bash
+# Get all sets for a format
+curl "http://localhost:3000/sets?format=gen9ou"
+
+# Get sets for specific Pokémon
+curl "http://localhost:3000/sets?format=gen9ou&pokemon=Charizard"
+```
+
+**Response:**
+```json
+{
+  "format": "gen9ou",
+  "pokemon": "Charizard",
+  "sets": [
+    {
+      "name": "Roost Three Attacks",
+      "moves": ["Fire Blast", "Air Slash", "Dragon Pulse", "Roost"],
+      "item": "Heavy-Duty Boots",
+      "ability": "Blaze",
+      "nature": "Timid",
+      "evs": { "hp": 0, "atk": 0, "def": 0, "spa": 252, "spd": 4, "spe": 252 },
+      "ivs": { "hp": 31, "atk": 0, "def": 31, "spa": 31, "spd": 31, "spe": 31 }
+    }
+  ]
+}
+```
+
+---
+
+### GET /stats
+
+Access usage statistics.
+
+**Query Parameters:**
+| Parameter | Type   | Required | Description |
+|-----------|--------|----------|-------------|
+| format    | string | Yes      | Battle format (e.g., "gen9ou") |
+| pokemon   | string | No       | Pokémon name |
+| month     | string | No       | Month in YYYY-MM format |
+| rating    | number | No       | Rating threshold (e.g., 1500, 1630, 1760) |
+
+**Examples:**
+
+```bash
+# Get current usage stats for a format
+curl "http://localhost:3000/stats?format=gen9ou"
+
+# Get stats for specific month
+curl "http://localhost:3000/stats?format=gen9ou&month=2024-01"
+
+# Get stats for specific rating
+curl "http://localhost:3000/stats?format=gen9ou&rating=1760"
+
+# Get stats for specific Pokémon
+curl "http://localhost:3000/stats?format=gen9ou&pokemon=Charizard"
+```
+
+---
+
+### GET /teams
+
+Retrieve sample teams.
+
+**Query Parameters:**
+| Parameter | Type   | Required | Description |
+|-----------|--------|----------|-------------|
+| format    | string | Yes      | Battle format (e.g., "gen9ou") |
+
+**Examples:**
+
+```bash
+# Get sample teams for a format
+curl "http://localhost:3000/teams?format=gen9ou"
+```
+
+**Response:**
+```json
+[
+  {
+    "name": "Sample Team 1",
+    "author": "Player Name",
+    "data": [
+      { "name": "Great Tusk", "species": "Great Tusk", ... },
+      { "name": "Kingambit", "species": "Kingambit", ... },
+      ...
+    ]
+  }
+]
+```
+
+---
+
+### GET /health
+
+Health check endpoint.
+
+**Example:**
+```bash
+curl http://localhost:3000/health
+```
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-01-15T12:00:00.000Z"
+}
+```
+
+---
+
+### GET /api-docs
+
+API documentation and OpenAPI specification summary.
+
+---
+
+## Error Responses
+
+All errors follow a consistent format:
+
+```json
+{
+  "error": {
+    "message": "Error description",
+    "code": "ERROR_CODE",
+    "statusCode": 400,
+    "details": { "field": "additional info" }
+  }
+}
+```
+
+**Error Codes:**
+| Code | Status | Description |
+|------|--------|-------------|
+| VALIDATION_ERROR | 400 | Invalid request parameters |
+| NOT_FOUND | 404 | Resource not found |
+| AUTHENTICATION_ERROR | 401 | Authentication required or invalid |
+| RATE_LIMIT_EXCEEDED | 429 | Rate limit exceeded |
+| EXTERNAL_API_ERROR | 502 | Error fetching data from external source |
+| INTERNAL_ERROR | 500 | Internal server error |
+
+---
+
+## Configuration
+
+Environment variables:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| PORT | 3000 | Server port |
+| NODE_ENV | development | Environment (development/production) |
+| CACHE_TTL | 3600 | Cache TTL in seconds |
+| RATE_LIMIT_MAX | 100 | Max requests per 15 minutes |
+| LOG_LEVEL | info | Logging verbosity (trace/debug/info/warn/error) |
+| API_KEY_REQUIRED | false | Enable API key authentication |
+
+---
+
+## Rate Limiting
+
+The API implements rate limiting to prevent abuse:
+- **Default**: 100 requests per 15-minute window
+- **Headers**: Rate limit info included in response headers
+- **Response**: 429 status when limit exceeded
+
+---
 
 ## Technology Stack
 
 - **Runtime**: Node.js with TypeScript
 - **Framework**: Express.js
-- **Data Source**: `@pkmn/smogon` package
-- **API Specification**: OpenAPI 3.0
+- **Logging**: Pino
+- **Testing**: Jest + Supertest
+- **Data Source**: @pkmn/smogon package
 
 ## Project Structure
 
 ```
-pkmn-smogon-proxy/
-├── src/
-│   ├── app.ts                    # Main Express application entry point
-│   ├── __tests__/                # Test files
-│   │   ├── app.test.ts          # Application tests
-│   │   ├── routes/              # Route tests
-│   │   │   ├── analyses.test.ts
-│   │   │   ├── formats.test.ts
-│   │   │   ├── sets.test.ts
-│   │   │   ├── stats.test.ts
-│   │   │   └── teams.test.ts
-│   │   ├── services/            # Service layer tests
-│   │   └── utils/               # Utility tests
-│   ├── routes/                   # API route definitions
-│   │   ├── analyses.ts          # Analyses endpoint routes
-│   │   ├── formats.ts           # Formats endpoint routes
-│   │   ├── sets.ts              # Sets/movesets endpoint routes
-│   │   ├── stats.ts             # Usage statistics endpoint routes
-│   │   └── teams.ts             # Sample teams endpoint routes
-│   ├── controllers/             # Request handlers and business logic
-│   │   ├── analysesController.ts
-│   │   ├── formatsController.ts
-│   │   ├── setsController.ts
-│   │   ├── statsController.ts
-│   │   └── teamsController.ts
-│   ├── services/                # Data fetching and processing logic
-│   │   ├── smogonService.ts     # Wrapper for @pkmn/smogon package
-│   │   └── cacheService.ts      # Caching layer for API responses
-│   ├── models/                  # TypeScript interfaces and types
-│   │   ├── analysis.ts          # Analysis data types
-│   │   ├── format.ts            # Format data types
-│   │   ├── set.ts               # Set/moveset data types
-│   │   ├── stats.ts             # Statistics data types
-│   │   └── team.ts              # Team data types
-│   ├── utils/                   # Helper functions and utilities
-│   │   ├── errorHandler.ts      # Global error handling
-│   │   ├── validator.ts         # Request validation helpers
-│   │   └── formatter.ts         # Data formatting utilities
-│   └── middleware/              # Express middleware
-│       ├── validation.ts        # Request validation middleware
-│       └── rateLimiter.ts       # Rate limiting middleware
-├── docs/
-│   └── openapi.yaml             # OpenAPI 3.0 specification
-├── coverage/                     # Test coverage reports (generated)
-├── dist/                        # Compiled JavaScript output
-├── package.json
-├── tsconfig.json
-├── jest.config.js               # Jest configuration
-└── README.md
+src/
+├── app.ts                    # Express application
+├── routes/                   # API route definitions
+├── controllers/              # Request handlers
+├── services/                 # Business logic
+│   ├── smogonService.ts      # @pkmn/smogon wrapper
+│   ├── cacheService.ts       # Caching layer
+│   ├── logger.ts             # Logging service
+│   └── apiKeyService.ts      # API key management
+├── middleware/               # Express middleware
+│   ├── validation.ts         # Request validation
+│   ├── rateLimiter.ts        # Rate limiting
+│   ├── auth.ts               # Authentication
+│   ├── errorHandler.ts       # Error handling
+│   └── requestLogger.ts      # Request logging
+├── errors/                   # Custom error classes
+└── types/                    # TypeScript types
 ```
 
-## API Endpoints
+## License
 
-### 1. Analyses (`/analyses`)
-- **Purpose**: Retrieve Pokémon analyses from Smogon
-- **Query Parameters**:
-  - `format` (optional): Battle format (e.g., "gen9ou")
-  - `pokemon` (optional): Specific Pokémon name
-- **Implementation Notes**: 
-  - Uses `@pkmn/smogon` analyses data
-  - Should support filtering by generation and format
-  - Returns detailed analysis including moves, items, abilities, and strategies
-
-### 2. Formats (`/formats`)
-- **Purpose**: Get list of available battle formats
-- **Query Parameters**: None
-- **Implementation Notes**:
-  - Returns all supported formats across generations
-  - Should be cached and refreshed periodically
-  - Includes both current and historical formats
-
-### 3. Sets (`/sets`)
-- **Purpose**: Retrieve competitive moveset data
-- **Query Parameters**:
-  - `format` (required): Battle format
-  - `pokemon` (optional): Specific Pokémon (returns all if omitted)
-- **Implementation Notes**:
-  - Provides recommended movesets for competitive play
-  - Includes EV spreads, IVs, natures, abilities, and items
-  - Should support multiple sets per Pokémon
-
-### 4. Stats (`/stats`)
-- **Purpose**: Access usage statistics
-- **Query Parameters**:
-  - `format` (required): Battle format
-  - `month` (optional): Month in YYYY-MM format
-  - `rating` (optional): Rating threshold (e.g., 1500, 1630, 1760)
-- **Implementation Notes**:
-  - Provides usage rates, win rates, and partner statistics
-  - Historical data available by month
-  - Different rating thresholds available for different skill levels
-
-### 5. Teams (`/teams`)
-- **Purpose**: Retrieve sample teams
-- **Query Parameters**:
-  - `format` (required): Battle format
-- **Implementation Notes**:
-  - Returns sample teams from high-level players
-  - Includes full team composition with sets
-  - Should include team descriptions and strategies
-
-For detailed implementation planning, phases, and timeline, see [Implementation Plan](plans/implementation-plan.md).
-
-## Key Dependencies
-
-### Production
-- `express`: Web framework
-- `@pkmn/smogon`: Smogon data access
-
-### Development
-- `typescript`: Type safety and compilation
-- `@types/node`: Node.js type definitions
-- `@types/express`: Express type definitions
-- `ts-node`: TypeScript execution for development
-
-## Testing
-
-This project uses **Jest** and **Supertest** for comprehensive testing.
-
-For detailed test planning, including:
-- Test structure and organization
-- Coverage goals and reporting
-- Testing patterns and examples
-- Mocking strategies
-- Best practices
-
-See the [Test Plan](plans/TEST_PLAN.md).
-
-### Quick Start
-
-```bash
-# Run all tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage report
-npm run test:coverage
-```
-
-## Configuration
-
-Environment variables supported:
-- `PORT`: Server port (default: 3000)
-- `NODE_ENV`: Environment (development/production)
-- `CACHE_TTL`: Cache time-to-live in seconds
-- `RATE_LIMIT_MAX`: Maximum requests per time window
-
-## Getting Started
-
-1. Install dependencies: `npm install`
-2. Build the project: `npm run build`
-3. Run tests: `npm test`
-4. Start the server: `npm start`
-5. For development: `npm run dev`
-
-## OpenAPI Documentation
-
-The complete API specification is available in `docs/openapi.yaml`. This can be used with tools like:
-- Swagger UI for interactive documentation
-- Code generators for client SDKs
-- API validation tools
-
-## Notes
-
-- The `@pkmn/smogon` package fetches data from data.pkmn.cc, which is updated regularly
-- Consider implementing caching to reduce load and improve response times
-- Rate limiting is important to be respectful to the data source
-- The API should handle errors gracefully and return meaningful error messages
-- All endpoints should return data in JSON format following the OpenAPI specification
+MIT
