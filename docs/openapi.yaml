@@ -1,0 +1,123 @@
+openapi: 3.0.0
+info:
+  title: Smogon API Proxy
+  description: OpenAPI wrapper for pkmn/smogon functionality providing access to Smogon analyses, sets, teams, and statistics
+  version: 1.0.0
+  contact:
+    name: API Support
+    
+servers:
+  - url: http://localhost:3000
+    description: Development server
+
+paths:
+  /analyses:
+    get:
+      summary: Get Pokémon analyses
+      description: Retrieve analyses data from Smogon
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+          description: Battle format (e.g., gen9ou)
+        - name: pokemon
+          in: query
+          schema:
+            type: string
+          description: Pokémon name
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                
+  /formats:
+    get:
+      summary: Get available formats
+      description: Retrieve list of available battle formats
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  
+  /sets:
+    get:
+      summary: Get Pokémon sets
+      description: Retrieve moveset data from Smogon
+      parameters:
+        - name: format
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Battle format (e.g., gen9ou)
+        - name: pokemon
+          in: query
+          schema:
+            type: string
+          description: Pokémon name (optional, returns all if not specified)
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                
+  /stats:
+    get:
+      summary: Get usage statistics
+      description: Retrieve usage statistics from Smogon
+      parameters:
+        - name: format
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Battle format (e.g., gen9ou)
+        - name: month
+          in: query
+          schema:
+            type: string
+          description: Month in YYYY-MM format
+        - name: rating
+          in: query
+          schema:
+            type: integer
+          description: Rating threshold
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                
+  /teams:
+    get:
+      summary: Get sample teams
+      description: Retrieve sample team data from Smogon
+      parameters:
+        - name: format
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Battle format (e.g., gen9ou)
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object

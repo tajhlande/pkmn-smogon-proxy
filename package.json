@@ -1,0 +1,37 @@
+{
+  "name": "pkmn-smogon-proxy",
+  "version": "1.0.0",
+  "description": "OpenAPI wrapper for pkmn/smogon functionality",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "dev": "ts-node src/app.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": [
+    "smogon",
+    "pokemon",
+    "api",
+    "openapi"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.5.0",
+    "@types/supertest": "^7.2.0",
+    "jest": "^30.3.0",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@pkmn/smogon": "^0.5.29",
+    "express": "^5.2.1"
+  }
+}
