@@ -121,41 +121,28 @@ Add production-quality features to improve reliability, observability, and devel
 **Status**: Not Started
 
 **Objectives**:
-Prepare the application for production deployment with monitoring, automation, and containerization.
+Prepare the application for containerized production deployment.
 
 **Tasks**:
-- [ ] Set up CI/CD pipeline
-  - Configure GitHub Actions or similar
-  - Add automated testing on PR
-  - Implement automated deployment
-  - Add build artifacts management
-  
-- [ ] Add monitoring and metrics
-  - Implement health check endpoints
-  - Add Prometheus metrics
-  - Set up application monitoring
-  - Configure alerting
-  
 - [ ] Implement graceful shutdown
   - Handle SIGTERM/SIGINT signals
   - Complete in-flight requests
-  - Close database connections
   - Clear caches properly
+  - Log shutdown progress
   
-- [ ] Add health check endpoints
-  - `/health` - basic health check
-  - `/ready` - readiness check
-  - `/live` - liveness check
-  - Include dependency status
+- [ ] Enhance health check endpoints for Docker/Kubernetes
+  - `/health` - basic health check (already exists)
+  - `/ready` - readiness check (can accept traffic)
+  - Include cache status in responses
   
 - [ ] Set up Docker containerization
-  - Create Dockerfile
+  - Create Dockerfile with multi-stage build
   - Optimize image size
-  - Create docker-compose.yml
+  - Create docker-compose.yml for local development
   - Document deployment process
   - Add environment configuration
 
-**Estimated Time**: 1-2 weeks
+**Estimated Time**: 1 week
 
 **Dependencies**: Phase 3 completion
 
@@ -250,7 +237,6 @@ Environment variables to be supported:
 - [x] Test coverage maintained >80% (99.44%)
 
 ### Phase 4
-- [ ] CI/CD pipeline runs automatically
-- [ ] Monitoring shows application health
-- [ ] Docker container runs successfully
 - [ ] Application handles shutdown gracefully
+- [ ] Health/readiness endpoints work correctly
+- [ ] Docker container builds and runs successfully
