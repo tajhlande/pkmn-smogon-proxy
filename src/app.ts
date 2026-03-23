@@ -8,6 +8,7 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { rateLimiter } from './middleware/rateLimiter';
 import { requestLogger } from './middleware/requestLogger';
 import logger from './services/logger';
+import { cacheService } from './services';
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
@@ -32,7 +33,31 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.get('/health', (req: Request, res: Response) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  const cacheStats = cacheService.getStats();
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    cache: {
+      size: cacheStats.size,
+    },
+  });
+});
+
+app.get('/ready', (req: Request, res: Response) => {
+  const cacheStats = cacheService.getStats();
+  
+  res.status(200).json({
+    ready: true,
+    timestamp: new Date().toISOString(),
+    checks: {
+      server: 'ok',
+      cache: {
+        status: 'ok',
+        entries: cacheStats.size,
+      },
+    },
+  });
 });
 
 app.get('/api-docs', (req: Request, res: Response) => {

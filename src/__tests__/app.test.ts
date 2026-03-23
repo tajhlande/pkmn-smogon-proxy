@@ -10,6 +10,13 @@ jest.mock('../services/logger', () => ({
   },
 }));
 
+jest.mock('../services', () => ({
+  cacheService: {
+    getStats: jest.fn(() => ({ size: 5, keys: ['key1', 'key2'] })),
+    clear: jest.fn(),
+  },
+}));
+
 describe('App', () => {
   describe('GET /', () => {
     it('should return API info', async () => {
@@ -32,6 +39,23 @@ describe('App', () => {
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('status', 'ok');
       expect(response.body).toHaveProperty('timestamp');
+      expect(response.body).toHaveProperty('uptime');
+      expect(response.body).toHaveProperty('cache');
+      expect(response.body.cache).toHaveProperty('size');
+    });
+  });
+
+  describe('GET /ready', () => {
+    it('should return readiness status', async () => {
+      const response = await request(app).get('/ready');
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('ready', true);
+      expect(response.body).toHaveProperty('timestamp');
+      expect(response.body).toHaveProperty('checks');
+      expect(response.body.checks).toHaveProperty('server', 'ok');
+      expect(response.body.checks).toHaveProperty('cache');
+      expect(response.body.checks.cache).toHaveProperty('status', 'ok');
+      expect(response.body.checks.cache).toHaveProperty('entries');
     });
   });
 

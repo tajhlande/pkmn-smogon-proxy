@@ -26,6 +26,49 @@ npm run test:coverage
 
 The server runs on port 3000 by default (configurable via `PORT` environment variable).
 
+## Docker Deployment
+
+### Deploy on Ubuntu Server
+
+After cloning the the repository:
+
+```bash
+git clone <your-repo-url>
+cd pkmn-smogon-proxy
+chmod +x deploy.sh
+./deploy.sh
+```
+
+The deploy script will:
+1. Build the Docker image
+2. Stop any existing containers
+3. Start the application with docker compose
+4. Verify the health check passes
+
+The application will be available at `http://<server-ip>:3000`.
+
+### Manual Docker Commands
+
+Build the image:
+```bash
+docker compose build
+```
+
+Start the application:
+```bash
+docker compose up -d
+```
+
+View logs:
+```bash
+docker compose logs -f
+```
+
+Stop the application:
+```bash
+docker compose down
+```
+
 ## API Endpoints
 
 ### Base URL
