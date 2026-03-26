@@ -120,5 +120,9 @@ app.use('/teams', teamsRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
+app.listen(PORT, () => {
+  logger.info(`Server running on port ${PORT}`);
+});
+
 export default app;
 
