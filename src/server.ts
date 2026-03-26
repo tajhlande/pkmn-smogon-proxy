@@ -4,6 +4,7 @@ import app from './app';
 import logger from './services/logger';
 import { cacheService } from './services';
 
+logger.info("PORT from env: `" + process.env.PORT + "`");
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const SHUTDOWN_TIMEOUT = parseInt(process.env.SHUTDOWN_TIMEOUT || '10000', 10);
 
