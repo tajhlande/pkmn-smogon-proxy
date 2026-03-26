@@ -4,15 +4,15 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "${EXT_PORT:-3000}:3000"
+      - "${EXT_PORT:-3000}:INT_PORT"
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=${INT_PORT:-3000}
       - LOG_LEVEL=info
       - CACHE_TTL=3600000
       - RATE_LIMIT_MAX=100
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${INT_PORT:-3000}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
