@@ -70,6 +70,7 @@ function startServer(): void {
 
   trackConnections(server);
 
+  logger.info("PORT from env: `" + process.env.PORT + "`");
   server.listen(PORT, () => {
     logger.info(`Server listening on port ${PORT}`);
     logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
