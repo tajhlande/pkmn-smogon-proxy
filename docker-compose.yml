@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "${EXT_PORT:-3000}:INT_PORT"
+      - "${EXT_PORT:-3000}:${INT_PORT:-3000}"
     environment:
       - NODE_ENV=production
       - PORT=${INT_PORT:-3000}
