@@ -4,7 +4,7 @@ import app from './app';
 import logger from './services/logger';
 import { cacheService } from './services';
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const SHUTDOWN_TIMEOUT = parseInt(process.env.SHUTDOWN_TIMEOUT || '10000', 10);
 
 let server: http.Server;
